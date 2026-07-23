@@ -1,0 +1,40 @@
+HOMEGREENERS · INSTALACIÓN COMO APP EN ANDROID
+
+1. Crea una cuenta gratuita en GitHub, si todavía no tienes una.
+2. Crea un repositorio nuevo llamado:
+   medicion-ventanas
+
+3. Sube a la raíz del repositorio TODOS estos archivos:
+   - index.html
+   - manifest.webmanifest
+   - service-worker.js
+   - icon-192.png
+   - icon-512.png
+   - .nojekyll
+
+4. En el repositorio entra en:
+   Settings > Pages
+
+5. En "Build and deployment":
+   - Source: Deploy from a branch
+   - Branch: main
+   - Folder: /(root)
+   - Pulsa Save
+
+6. GitHub mostrará una dirección parecida a:
+   https://TUUSUARIO.github.io/medicion-ventanas/
+
+7. Abre esa dirección en Google Chrome desde el móvil.
+8. Pulsa el botón "Instalar app" de la aplicación.
+   Si no aparece, usa:
+   Chrome > ⋮ > Instalar aplicación
+   o Chrome > ⋮ > Añadir a pantalla de inicio.
+
+9. Abre la aplicación una vez con conexión.
+   Después funcionará sin conexión porque sus archivos quedan guardados en el móvil.
+
+IMPORTANTE
+- Las mediciones se guardan en ese teléfono y en esa instalación.
+- Exporta una copia de seguridad al terminar cada vivienda.
+- No borres los datos de la aplicación o de Chrome sin exportar previamente.
+- Para actualizar la app, sustituye los archivos del repositorio por la nueva versión.

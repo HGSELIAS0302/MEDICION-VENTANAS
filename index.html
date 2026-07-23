@@ -1,0 +1,365 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>HOMEGREENERS · Presupuesto rápido de ventanas V1.5</title>
+<meta name="theme-color" content="#125a35">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Medición ventanas">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="apple-touch-icon" href="./icon-192.png">
+
+<style>
+:root{--g:#125a35;--gd:#0d4428;--gs:#eaf5ee;--ink:#1f2f39;--muted:#6d7a72;--line:#dbe2dd;--bg:#eef3ef;--danger:#b83c34}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,system-ui,sans-serif;background:var(--bg);color:var(--ink)}
+button,input,select,textarea{font:inherit}button{cursor:pointer}
+.top{position:sticky;top:0;z-index:20;background:linear-gradient(135deg,var(--gd),var(--g));color:#fff;padding:12px 16px}
+.topin{max-width:1180px;margin:auto;display:flex;align-items:center;gap:10px}.logo{width:38px;height:38px;border:2px solid #fff;border-radius:8px;display:grid;place-items:center;font-weight:900}
+.brand{flex:1}.brand b{display:block}.brand small{opacity:.8}.status{font-size:11px}
+.wrap{max-width:1180px;margin:auto;padding:14px 14px 88px}.notice{background:var(--gs);border:1px solid #cde5d5;border-radius:12px;padding:10px 12px;font-size:12px;color:var(--gd);margin-bottom:12px}
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px}.card+.card{margin-top:12px}
+h2,h3{margin:0 0 10px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+label{display:block;font-size:12px;font-weight:700;color:var(--muted);margin:10px 0 5px}
+input,select,textarea{width:100%;border:1.5px solid var(--line);border-radius:9px;padding:10px;background:#fff}textarea{min-height:76px;resize:vertical}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--g);box-shadow:0 0 0 3px rgba(18,90,53,.1)}
+.workspace{display:grid;grid-template-columns:minmax(0,1fr) 350px;gap:14px;margin-top:12px;align-items:start}.side{position:sticky;top:76px;max-height:calc(100vh - 90px);overflow:auto}
+.models{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.model{border:1.5px solid var(--line);border-radius:10px;background:#fff;padding:7px;text-align:center}.model.active{border-color:var(--g);background:#f8fcf9}
+.model svg{width:100%;height:64px}.model b{display:block;font-size:11px;line-height:1.1}
+.editor{display:grid;grid-template-columns:minmax(280px,1fr) minmax(300px,1fr);gap:12px;margin-top:12px}.drawing{min-height:335px;border:1px solid var(--line);border-radius:11px;background:#f6f7f6;padding:10px;display:flex;align-items:center;justify-content:center;position:relative}.drawing svg{width:100%;height:100%;max-height:320px}
+.badge{position:absolute;top:8px;left:8px;background:#fff4e8;border:1px solid #efd0b8;color:#974a18;border-radius:7px;padding:4px 7px;font-size:10px;font-weight:700}
+.formbox{border:1px solid var(--line);border-radius:11px;padding:12px}.sub{border-top:1px solid var(--line);margin-top:13px;padding-top:2px}.sub b{display:block;margin-top:10px;font-size:11px;color:var(--gd);text-transform:uppercase;letter-spacing:.5px}
+.checkgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:8px}.check{display:flex;align-items:center;gap:7px;border:1px solid var(--line);border-radius:9px;padding:8px;font-size:12px}.check input{width:18px;height:18px;margin:0;accent-color:var(--g)}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.btn{border:0;border-radius:10px;padding:10px 13px;font-weight:700;min-height:40px}.primary{background:var(--g);color:#fff}.secondary{background:var(--gs);color:var(--gd);border:1px solid #cde5d5}.ghost{background:#fff;color:var(--muted);border:1px solid var(--line)}.danger{background:#fff0ee;color:var(--danger);border:1px solid #efd0cb}
+.actions .btn{flex:1;min-width:135px}.item{border:1px solid var(--line);border-radius:10px;padding:8px;margin-top:8px}.itemrow{display:grid;grid-template-columns:70px 1fr auto;gap:8px;align-items:center}.mini{height:55px;background:#f6f7f6;border-radius:7px}.mini svg{width:100%;height:100%}.ref{font-size:11px;font-weight:900;color:var(--g)}.meta{font-size:11px;color:var(--muted);line-height:1.3}.tools{display:flex;flex-direction:column;gap:4px}.small{padding:5px 8px;min-height:30px;font-size:11px}
+.empty{background:#f1f4f2;border-radius:9px;padding:14px;color:var(--muted);font-size:12px;line-height:1.4}
+.glass-result{margin-top:9px;padding:10px 11px;border:1px solid #cfe2d5;background:#f4faf6;border-radius:9px;font-size:12px;font-weight:700;color:var(--gd);line-height:1.4}
+.glass-warning{margin-top:8px;padding:9px 10px;border:1px solid #e5b58d;background:#fff5ec;border-radius:9px;font-size:11px;font-weight:700;color:#93471e;line-height:1.4}
+.photo-box{margin-top:8px;border:1px dashed #b7c5bc;border-radius:10px;background:#f7faf8;padding:9px}
+.photo-empty{min-height:92px;display:grid;place-items:center;text-align:center;color:var(--muted);font-size:11px}
+.photo-preview{position:relative}.photo-preview img{display:block;width:100%;max-height:230px;object-fit:contain;border-radius:8px;background:#e9eeeb}
+.photo-actions{display:flex;gap:7px;margin-top:8px}.photo-actions .btn{flex:1;padding:8px;font-size:11px}
+.photo-mark{display:inline-block;margin-top:3px;color:var(--g);font-weight:700}
+.hidden{display:none!important}.invalid{border-color:var(--danger)!important}
+.bottom{position:fixed;left:0;right:0;bottom:0;padding:20px 14px 10px;background:linear-gradient(180deg,transparent,var(--bg) 25%);z-index:15}.bottomin{max-width:1180px;margin:auto;display:flex;gap:8px}.bottom .btn{flex:1}
+#toast{position:fixed;left:50%;bottom:76px;transform:translate(-50%,12px);opacity:0;background:#123928;color:#fff;padding:10px 14px;border-radius:9px;transition:.2s;z-index:99;font-size:12px}#toast.show{opacity:1;transform:translate(-50%,0)}
+#printRoot{display:none}
+@media(max-width:900px){.workspace{grid-template-columns:1fr}.side{position:static;max-height:none}.models{grid-template-columns:repeat(3,1fr)}}@media(max-width:650px){.editor{grid-template-columns:1fr}.grid2,.grid3{grid-template-columns:1fr}.models{grid-template-columns:repeat(2,1fr)}.drawing{min-height:270px}}
+@page{size:A4;margin:9mm}
+@media print{
+body{background:#fff}#app,.bottom,#toast{display:none!important}#printRoot{display:block!important;font-family:Arial,sans-serif;color:#111}
+.ph{display:grid;grid-template-columns:45mm 1fr 28mm;border:1px solid #263d4a;min-height:23mm;margin-bottom:3mm}.ph>div{padding:3mm}.ph .mid,.ph .date{border-left:1px solid #263d4a}.ph h1{font-size:13pt;margin:0 0 1mm;text-align:center;color:#17384d}.ph p{font-size:7pt;margin:0;text-align:center}.ph .date{text-align:center;font-size:7pt}.ph .date b{display:block;font-size:10pt;margin-top:2mm}
+.pb{display:flex;align-items:center;gap:3mm}.pm{width:12mm;height:12mm;border:1mm solid #125a35;color:#125a35;display:grid;place-items:center;font-weight:900}.pb b{font-size:12pt;color:#17384d}.pb small{display:block;font-size:6pt}
+.pinfo{display:grid;grid-template-columns:1.3fr 1fr 1fr;border:1px solid #263d4a;margin-bottom:3mm}.pinfo>div{padding:2.2mm 3mm;border-right:1px solid #a9b3b8;font-size:7pt;line-height:1.4}.pinfo>div:last-child{border-right:0}.pinfo b{color:#17384d}
+.pwarn{border:1px solid #d8a36f;background:#fff6ea;padding:2mm 3mm;font-size:7pt;font-weight:700;margin-bottom:3mm}
+table{width:100%;border-collapse:collapse;font-size:6.8pt;margin-bottom:4mm}th,td{border:1px solid #8c989e;padding:1.4mm 1.7mm;text-align:left}th{background:#17384d;color:#fff}
+.pc{border:1px solid #263d4a;margin-bottom:4mm;break-inside:avoid}.pch{display:grid;grid-template-columns:18mm 1fr 25mm 30mm;background:#f3f6f4;border-bottom:1px solid #263d4a}.pch>div{padding:2mm;border-right:1px solid #a9b3b8;font-size:7pt}.pch>div:last-child{border-right:0}.pref{background:#17384d!important;color:#fff;font-size:12pt!important;font-weight:900;text-align:center}.pch b{display:block;font-size:9pt}
+.pbody{display:grid;grid-template-columns:42% 58%;min-height:82mm}.pdraw{padding:2.5mm;border-right:1px solid #a9b3b8;display:flex;align-items:center;justify-content:center}.pdraw svg{width:100%;height:77mm}.pdata{padding:2.5mm 3mm}
+.pphoto{border-top:1px solid #a9b3b8;padding:2.5mm 3mm}.pphoto b{display:block;color:#17384d;font-size:7pt;margin-bottom:1.5mm}.pphoto img{display:block;max-width:100%;max-height:78mm;margin:auto;object-fit:contain}.pgrid{display:grid;grid-template-columns:1fr 1fr;gap:2mm}.pbox{border:1px solid #c0c8c3;padding:2mm;font-size:7pt;min-height:15mm}.pbox b{display:block;color:#17384d;margin-bottom:1mm}.pnotes{border:1px solid #c0c8c3;padding:2mm;margin-top:2mm;font-size:7pt;min-height:18mm}
+}
+</style>
+</head>
+<body>
+<div id="app">
+<header class="top"><div class="topin"><div class="logo">HG</div><div class="brand"><b>HOMEGREENERS</b><small>Presupuesto rápido de ventanas · V1.5</small></div><button class="btn secondary small hidden" id="installAppBtn" type="button">Instalar app</button><div class="status" id="status">Guardado local</div></div></header>
+<main class="wrap">
+<div class="notice">Aplicación autónoma y sin conexión. Los datos se guardan en este dispositivo. El resultado final se genera como PDF para el departamento de estudios.</div>
+
+<section class="card">
+<h2>1. Datos generales</h2>
+<div class="grid3">
+<div><label>Cliente *</label><input id="client" placeholder="Nombre y apellidos"></div>
+<div><label>Teléfono</label><input id="phone" placeholder="600 000 000"></div>
+<div><label>Fecha</label><input id="date" type="date"></div>
+</div>
+<div class="grid2">
+<div><label>Dirección *</label><input id="address" placeholder="Dirección de la vivienda"></div>
+<div><label>Técnico / comercial</label><input id="technician" placeholder="Nombre"></div>
+</div>
+<div class="grid3">
+<div><label>Serie</label><select id="series"><option>GEALAN LINEAR 74 mm</option><option>Triple junta 76 mm</option><option>Pendiente de definir</option><option>Otro</option></select></div>
+<div><label>Color de carpintería</label><select id="colorMode"><option value="white">Blanco a dos caras</option><option value="same">Color estándar a dos caras</option><option value="bicolor">Bicolor: blanco interior / color exterior</option></select></div>
+<div id="colorWrap" class="hidden"><label id="colorLabel">Color</label><input id="colorName" list="colors" placeholder="Ej. RAL 7016 antracita"><datalist id="colors"><option value="RAL 7016 antracita"><option value="Negro mate"><option value="Nogal"><option value="Roble dorado"><option value="Bronce"></datalist></div>
+</div>
+<div class="grid2">
+<div><label>Tipo de instalación</label><select id="install"><option>Pendiente de confirmar</option><option>Tornillería</option><option>Albañilería</option><option>Mixta</option></select></div>
+<div><label>Observaciones generales</label><input id="generalNotes" placeholder="Información general para estudios"></div>
+</div>
+</section>
+
+<div class="workspace">
+<section>
+<div class="card">
+<h2 id="formTitle">2. Añadir primera ventana</h2>
+<div id="models" class="models"></div>
+<div class="editor">
+<div class="drawing"><span id="inheritBadge" class="badge hidden">Configuración heredada</span><div id="preview" style="width:100%;height:100%"></div></div>
+<div class="formbox">
+<div class="grid2"><div><label>Estancia *</label><input id="room" placeholder="Ej. Salón"></div><div><label>Unidades</label><input id="units" type="number" min="1" value="1"></div></div>
+<div class="grid2"><div><label>Ancho total (mm) *</label><input id="width" type="number" placeholder="1450"></div><div><label>Alto total (mm) *</label><input id="height" type="number" placeholder="1250"></div></div>
+
+<div class="sub" id="openingSec"><b>Apertura</b>
+<div id="singleOpen" class="grid2"><div><label>Bisagras</label><select id="hinge"><option value="left">Izquierda</option><option value="right">Derecha</option></select></div><label class="check" style="margin-top:31px"><input id="oscilo" type="checkbox" checked> Oscilobatiente</label></div>
+<div id="doubleOpen" class="grid2 hidden"><div><label>Hoja activa</label><select id="active"><option value="right">Derecha</option><option value="left">Izquierda</option></select></div><label class="check" style="margin-top:31px"><input id="oscilo2" type="checkbox" checked> Oscilo en activa</label></div>
+<div id="tripleOpen" class="grid2 hidden"><div><label>Hoja independiente</label><select id="independent"><option value="right">Derecha</option><option value="left">Izquierda</option></select></div><label class="check" style="margin-top:31px"><input id="oscilo3" type="checkbox" checked> Oscilo independiente</label></div>
+</div>
+
+<div class="sub"><b>Persiana</b><div class="grid2"><div><label>Accionamiento</label><select id="blind"><option value="none">Sin persiana</option><option value="tape">Cinta</option><option value="motor">Motor con pulsador</option><option value="remote">Motor con mando</option></select></div><div id="boxWrap" class="hidden"><label>Cajón</label><select id="box"><option value="155">155 mm</option><option value="185">185 mm</option><option value="other">Otra medida</option></select></div></div><div id="boxOtherWrap" class="hidden"><label>Otra medida de cajón</label><input id="boxOther" type="number"></div><label id="heightBoxWrap" class="check hidden"><input id="heightIncludesBox" type="checkbox" checked> El alto incluye el cajón</label></div>
+
+<div class="sub"><b>Vidrio</b>
+<div class="grid2">
+<div><label>Tipo de acristalamiento</label><select id="glassType">
+<option value="double">Doble acristalamiento</option>
+<option value="triple">Triple acristalamiento</option>
+</select></div>
+<div id="middleGlassWrap" class="hidden"><label>Vidrio central</label><input value="4 mm transparente" disabled></div>
+</div>
+<div id="glassFaces">
+<div class="grid2">
+<div><label>Vidrio interior</label><select id="glassInterior">
+<option value="4">4 mm transparente</option>
+<option value="4_mate">4 mm mate</option>
+<option value="44">4+4 laminado</option>
+<option value="44_acoustic">4+4 laminado acústico</option>
+<option value="44_mate">4+4 laminado mate</option>
+</select></div>
+<div><label>Vidrio exterior</label><select id="glassExterior">
+<option value="4">4 mm transparente</option>
+<option value="4_mate">4 mm mate</option>
+<option value="44">4+4 laminado</option>
+<option value="44_acoustic">4+4 laminado acústico</option>
+<option value="44_mate">4+4 laminado mate</option>
+</select></div>
+</div>
+</div>
+<div id="glassResult" class="glass-result"></div>
+<div id="glassWarning" class="glass-warning hidden"></div>
+</div>
+
+<div class="sub"><b>Fijos y complementos</b><div class="checkgrid">
+<label class="check"><input id="fixedTop" type="checkbox"> Fijo superior</label><label class="check" id="fixedBottomLab"><input id="fixedBottom" type="checkbox"> Fijo inferior</label>
+<label class="check"><input id="fixedLeft" type="checkbox"> Fijo lateral izq.</label><label class="check"><input id="fixedRight" type="checkbox"> Fijo lateral dcha.</label>
+<label class="check"><input id="mosquito" type="checkbox"> Mosquitera</label><label class="check"><input id="threshold" type="checkbox"> Umbral / solera</label>
+<label class="check"><input id="doubleHandle" type="checkbox"> Manilla dos caras</label><label class="check"><input id="exteriorPull" type="checkbox"> Tirador exterior</label>
+<label class="check"><input id="security" type="checkbox"> Cerraderos seguridad</label>
+</div>
+<div id="lintelWrap" class="hidden">
+<label>Medida disponible de dintel (mm) *</label>
+<input id="lintel" type="number" min="0" placeholder="Ej. 55">
+<div class="glass-warning" style="margin-top:7px">Dato necesario para comprobar si la mosquitera puede integrarse en la ventana y venir montada de fábrica.</div>
+</div>
+</div>
+<div class="sub"><label>Observaciones particulares</label><textarea id="notes" placeholder="Excepciones o datos especiales"></textarea></div>
+<div class="sub"><b>Fotografía de esta ventana</b>
+<div class="photo-box">
+<div id="photoEmpty" class="photo-empty">Sin fotografía.<br>Puedes hacerla ahora o seleccionarla del dispositivo.</div>
+<div id="photoPreview" class="photo-preview hidden"><img id="photoImg" alt="Fotografía de la ventana"></div>
+<div class="photo-actions">
+<label class="btn secondary" for="photoInput">Hacer o elegir foto</label>
+<input id="photoInput" class="hidden" type="file" accept="image/*" capture="environment">
+<button class="btn danger hidden" id="removePhotoBtn" type="button">Quitar foto</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="actions">
+<button class="btn secondary" id="templateBtn">Usar como configuración por defecto</button>
+<button class="btn ghost" id="saveBtn">Guardar ventana</button>
+<button class="btn primary" id="saveNextBtn">Guardar y añadir otra</button>
+</div>
+</div>
+</section>
+
+<aside class="side"><div class="card"><h3>Ventanas registradas</h3><div id="list"></div><div class="actions"><button class="btn ghost small" id="exportBtn">Exportar copia</button><label class="btn ghost small" for="importInput">Importar copia</label><input id="importInput" class="hidden" type="file" accept=".json"></div><button class="btn danger" id="clearBtn" style="width:100%;margin-top:8px">Borrar medición completa</button></div></aside>
+</div>
+</main>
+</div>
+
+<div class="bottom"><div class="bottomin"><button class="btn secondary" id="copyBtn">Copiar resumen</button><button class="btn primary" id="pdfBtn">Generar PDF para estudios</button></div></div>
+<div id="printRoot"></div><div id="toast"></div>
+
+<script>
+'use strict';
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const KEY='hgs_presupuesto_rapido_v1_1';
+const MODELS=[
+{key:'win1',label:'Ventana 1 hoja',kind:'single'},
+{key:'win2',label:'Ventana 2 hojas',kind:'double'},
+{key:'win3',label:'Ventana 3 hojas',kind:'triple'},
+{key:'bal1',label:'Balconera 1 hoja',kind:'single',door:true},
+{key:'bal2',label:'Balconera 2 hojas',kind:'double',door:true},
+{key:'bal3',label:'Balconera 3 hojas',kind:'triple',door:true},
+{key:'fixed',label:'Fijo',kind:'fixed'},
+{key:'slide2',label:'Corredera 2 hojas',kind:'slide'},
+{key:'slide3',label:'Corredera 3 hojas',kind:'slide3'}];
+const MM=Object.fromEntries(MODELS.map(m=>[m.key,m]));
+const GLASS_FACE={
+'4':'4 mm transparente',
+'4_mate':'4 mm mate',
+'44':'4+4 laminado',
+'44_acoustic':'4+4 laminado acústico',
+'44_mate':'4+4 laminado mate'
+};
+const BLIND={none:'Sin persiana',tape:'Cinta',motor:'Motor con pulsador',remote:'Motor con mando'};
+const nowISO=()=>{const d=new Date(),o=d.getTimezoneOffset();return new Date(d-o*60000).toISOString().slice(0,10)};
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const clone=o=>JSON.parse(JSON.stringify(o));
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function blank(){return{project:{client:'',phone:'',date:nowISO(),address:'',technician:'',series:'GEALAN LINEAR 74 mm',colorMode:'white',colorName:'',install:'Pendiente de confirmar',generalNotes:''},windows:[],template:null}}
+let state=blank(),editing=null,inherited=false,draft=null,selected='win2';
+function defaults(){return{model:'win2',hinge:'left',active:'right',independent:'right',oscilo:true,oscilo2:true,oscilo3:true,blind:'none',box:'155',boxOther:'',heightIncludesBox:true,glassType:'double',glassInterior:'4',glassExterior:'4',fixedTop:false,fixedBottom:false,fixedLeft:false,fixedRight:false,mosquito:false,lintel:'',threshold:false,doubleHandle:false,exteriorPull:false,security:false}}
+function newDraft(){return{id:uid(),...(state.template?clone(state.template):defaults()),room:'',units:1,width:'',height:'',notes:'',photo:''}}
+function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('show'),1900)}
+function save(){localStorage.setItem(KEY,JSON.stringify(state));$('#status').textContent='Guardado '+new Date().toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'})}
+function load(){try{const x=JSON.parse(localStorage.getItem(KEY));if(x)state={...blank(),...x,project:{...blank().project,...x.project},windows:Array.isArray(x.windows)?x.windows.map(normalizeGlass):[],template:x.template?normalizeGlass(x.template):null}}catch(e){}}
+function readProject(){state.project={client:$('#client').value.trim(),phone:$('#phone').value.trim(),date:$('#date').value,address:$('#address').value.trim(),technician:$('#technician').value.trim(),series:$('#series').value,colorMode:$('#colorMode').value,colorName:$('#colorName').value.trim(),install:$('#install').value,generalNotes:$('#generalNotes').value.trim()}}
+function writeProject(){const p=state.project;['client','phone','date','address','technician','series','colorMode','colorName','install','generalNotes'].forEach(k=>$('#'+k).value=p[k]??'');syncColor()}
+function syncColor(){const m=$('#colorMode').value;$('#colorWrap').classList.toggle('hidden',m==='white');$('#colorLabel').textContent=m==='same'?'Color en ambas caras':'Color exterior'}
+function colorDesc(){const p=state.project;return p.colorMode==='white'?'Blanco a dos caras':p.colorMode==='same'?`${p.colorName||'Color pendiente'} a dos caras`:`Blanco interior / ${p.colorName||'color exterior pendiente'}`}
+function glassFaceCode(v){return({'4':'4','4_mate':'4 MATE','44':'4+4','44_acoustic':'4+4 ACÚSTICO','44_mate':'4+4 MATE'}[v]||'4')}
+function isLaminatedGlass(v){return String(v||'').startsWith('44')}
+function normalizeGlass(w={}){
+  if(w.glassType)return{...w,glassType:w.glassType==='triple'?'triple':'double',glassInterior:w.glassInterior||'4',glassExterior:w.glassExterior||'4',lintel:w.lintel||''};
+  const legacy={
+    standard:{glassType:'double',glassInterior:'4',glassExterior:'4'},
+    triple:{glassType:'triple',glassInterior:'4',glassExterior:'4'},
+    lamin:{glassType:'double',glassInterior:'44',glassExterior:'4'},
+    lamout:{glassType:'double',glassInterior:'4',glassExterior:'44'},
+    lamboth:{glassType:'double',glassInterior:'44',glassExterior:'44'},
+    matein:{glassType:'double',glassInterior:'4_mate',glassExterior:'4'},
+    mateout:{glassType:'double',glassInterior:'4',glassExterior:'4_mate'},
+    acoustic:{glassType:'double',glassInterior:'44_acoustic',glassExterior:'4'},
+    other:{glassType:'other',glassInterior:'4',glassExterior:'4'}
+  };
+  return{...w,...(legacy[w.glass]||legacy.standard)};
+}
+function glassComposition(w={}){
+  const v=normalizeGlass(w);
+  const inside=glassFaceCode(v.glassInterior),outside=glassFaceCode(v.glassExterior);
+  if(v.glassType==='double')return`${inside}/16/${outside}`;
+  const laminated=[v.glassInterior,v.glassExterior].filter(isLaminatedGlass).length;
+  if(laminated>=2)return`${inside}/16/${outside}`;
+  const chamber=laminated===1?'14':'16';
+  return`${inside}/${chamber}/4/${chamber}/${outside}`;
+}
+function glassDescription(w={}){
+  const v=normalizeGlass(w);
+  const bothLaminated=isLaminatedGlass(v.glassInterior)&&isLaminatedGlass(v.glassExterior);
+  const type=v.glassType==='triple'&&!bothLaminated?'Triple acristalamiento':'Doble acristalamiento';
+  return`${type} ${glassComposition(v)} · bajo emisivo + control solar · gas argón · intercalario térmico`;
+}
+function syncGlass(){
+  let type=$('#glassType').value;
+  const inside=$('#glassInterior').value,outside=$('#glassExterior').value;
+  const bothLaminated=isLaminatedGlass(inside)&&isLaminatedGlass(outside);
+  let warning='';
+  if(type==='triple'&&bothLaminated){
+    type='double';
+    $('#glassType').value='double';
+    warning='Con vidrios laminados en ambas caras se utiliza doble acristalamiento con una sola cámara, no triple.';
+  }else if(type==='triple'&&(isLaminatedGlass(inside)||isLaminatedGlass(outside))){
+    warning='Al llevar un laminado, la composición triple utiliza cámaras de 14 mm.';
+  }
+  $('#glassFaces').classList.remove('hidden');
+  $('#middleGlassWrap').classList.toggle('hidden',type!=='triple');
+  $('#glassWarning').classList.toggle('hidden',!warning);
+  $('#glassWarning').textContent=warning;
+  const temp={glassType:type,glassInterior:inside,glassExterior:outside};
+  $('#glassResult').textContent=glassDescription(temp);
+}
+function renderPhoto(){
+  const has=!!(draft&&draft.photo);
+  $('#photoEmpty').classList.toggle('hidden',has);
+  $('#photoPreview').classList.toggle('hidden',!has);
+  $('#removePhotoBtn').classList.toggle('hidden',!has);
+  if(has)$('#photoImg').src=draft.photo;
+  else $('#photoImg').removeAttribute('src');
+}
+async function compressPhoto(file){
+  const url=URL.createObjectURL(file);
+  try{
+    const img=await new Promise((resolve,reject)=>{
+      const el=new Image();
+      el.onload=()=>resolve(el);
+      el.onerror=reject;
+      el.src=url;
+    });
+    const max=1000;
+    let width=img.naturalWidth||img.width,height=img.naturalHeight||img.height;
+    const scale=Math.min(1,max/Math.max(width,height));
+    width=Math.max(1,Math.round(width*scale));
+    height=Math.max(1,Math.round(height*scale));
+    const canvas=document.createElement('canvas');
+    canvas.width=width;canvas.height=height;
+    const ctx=canvas.getContext('2d');
+    ctx.fillStyle='#fff';ctx.fillRect(0,0,width,height);
+    ctx.drawImage(img,0,0,width,height);
+    return canvas.toDataURL('image/jpeg',0.68);
+  }finally{URL.revokeObjectURL(url)}
+}
+function config(w){const ks=['model','hinge','active','independent','oscilo','oscilo2','oscilo3','blind','box','boxOther','heightIncludesBox','glassType','glassInterior','glassExterior','fixedTop','fixedBottom','fixedLeft','fixedRight','mosquito','lintel','threshold','doubleHandle','exteriorPull','security'];return Object.fromEntries(ks.map(k=>[k,w[k]]))}
+function boxSize(w){return w.box==='other'?(w.boxOther||'otra'):w.box}
+function blindDesc(w){return w.blind==='none'?'Sin persiana':`${BLIND[w.blind]} · cajón ${boxSize(w)} mm · ${w.heightIncludesBox?'alto incluye cajón':'alto sin cajón'}`}
+function acc(w){const a=[];if(w.fixedTop)a.push('fijo superior');if(w.fixedBottom)a.push('fijo inferior');if(w.fixedLeft)a.push('fijo lateral izq.');if(w.fixedRight)a.push('fijo lateral dcha.');if(w.mosquito)a.push(`mosquitera · dintel ${w.lintel||'pendiente'} mm · valorar integración en fábrica`);if(w.threshold)a.push('umbral/solera');if(w.doubleHandle)a.push('manilla a dos caras');if(w.exteriorPull)a.push('tirador exterior');if(w.security)a.push('cerraderos seguridad');return a.length?a.join(', '):'Sin complementos'}
+function opening(w){const m=MM[w.model];if(m.kind==='fixed')return'Elemento fijo';if(m.kind==='slide'||m.kind==='slide3')return'Apertura corredera';if(m.kind==='single')return`Bisagras ${w.hinge==='left'?'izquierda':'derecha'}${w.oscilo?' · oscilo':''}`;if(m.kind==='double')return`Hoja activa ${w.active==='left'?'izquierda':'derecha'}${w.oscilo2?' · oscilo':''}`;return`Hoja independiente ${w.independent==='left'?'izquierda':'derecha'}${w.oscilo3?' · oscilo':''}`}
+function readDraft(){draft={...draft,model:selected,room:$('#room').value.trim(),units:Math.max(1,+$('#units').value||1),width:$('#width').value.trim(),height:$('#height').value.trim(),hinge:$('#hinge').value,active:$('#active').value,independent:$('#independent').value,oscilo:$('#oscilo').checked,oscilo2:$('#oscilo2').checked,oscilo3:$('#oscilo3').checked,blind:$('#blind').value,box:$('#box').value,boxOther:$('#boxOther').value.trim(),heightIncludesBox:$('#heightIncludesBox').checked,glassType:$('#glassType').value,glassInterior:$('#glassInterior').value,glassExterior:$('#glassExterior').value,fixedTop:$('#fixedTop').checked,fixedBottom:$('#fixedBottom').checked,fixedLeft:$('#fixedLeft').checked,fixedRight:$('#fixedRight').checked,mosquito:$('#mosquito').checked,lintel:$('#lintel').value.trim(),threshold:$('#threshold').checked,doubleHandle:$('#doubleHandle').checked,exteriorPull:$('#exteriorPull').checked,security:$('#security').checked,notes:$('#notes').value.trim(),photo:draft.photo||''};return draft}
+function writeDraft(){selected=draft.model||'win2';$('#room').value=draft.room||'';$('#units').value=draft.units||1;$('#width').value=draft.width||'';$('#height').value=draft.height||'';$('#hinge').value=draft.hinge||'left';$('#active').value=draft.active||'right';$('#independent').value=draft.independent||'right';$('#oscilo').checked=draft.oscilo!==false;$('#oscilo2').checked=draft.oscilo2!==false;$('#oscilo3').checked=draft.oscilo3!==false;$('#blind').value=draft.blind||'none';$('#box').value=draft.box||'155';$('#boxOther').value=draft.boxOther||'';$('#heightIncludesBox').checked=draft.heightIncludesBox!==false;
+draft=normalizeGlass(draft);
+$('#glassType').value=draft.glassType||'double';
+$('#glassInterior').value=draft.glassInterior||'4';
+$('#glassExterior').value=draft.glassExterior||'4';
+['fixedTop','fixedBottom','fixedLeft','fixedRight','mosquito','lintel','threshold','doubleHandle','exteriorPull','security'].forEach(k=>$('#'+k).checked=!!draft[k]);$('#notes').value=draft.notes||'';renderPhoto();$('#inheritBadge').classList.toggle('hidden',!inherited);$('#formTitle').textContent=editing?'Editar ventana':state.windows.length?'2. Añadir otra ventana':'2. Añadir primera ventana';renderModels();syncForm();preview()}
+function syncForm(){const m=MM[selected],no=['fixed','slide','slide3'].includes(m.kind);$('#openingSec').classList.toggle('hidden',no);$('#singleOpen').classList.toggle('hidden',m.kind!=='single');$('#doubleOpen').classList.toggle('hidden',m.kind!=='double');$('#tripleOpen').classList.toggle('hidden',m.kind!=='triple');const b=$('#blind').value!=='none';$('#boxWrap').classList.toggle('hidden',!b);$('#heightBoxWrap').classList.toggle('hidden',!b);$('#boxOtherWrap').classList.toggle('hidden',!b||$('#box').value!=='other');$('#fixedBottomLab').classList.toggle('hidden',!!m.door);if(m.door)$('#fixedBottom').checked=false;$('#lintelWrap').classList.toggle('hidden',!$('#mosquito').checked);syncGlass()}
+function svg(w,compact=false){const W=compact?180:520,H=compact?95:340,m=MM[w.model]||MM.win2,ma=compact?8:54;let x=ma,y=compact?7:35,bw=W-ma*2,bh=compact?74:235;const sw=compact?2:3.2,blind=w.blind&&w.blind!=='none',boxH=blind?(compact?12:34):0;let s=`<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg"><rect width="${W}" height="${H}" fill="#f6f7f6"/>`;if(blind){s+=`<rect x="${x}" y="${y}" width="${bw}" height="${boxH}" fill="#e4e7e5" stroke="#263d4a" stroke-width="${sw}"/>`;if(!compact)s+=`<text x="${x+bw/2}" y="${y+22}" text-anchor="middle" font-size="13" font-weight="700">CAJÓN ${esc(boxSize(w))} mm</text>`;y+=boxH}s+=`<rect x="${x}" y="${y}" width="${bw}" height="${bh}" fill="#fff" stroke="#263d4a" stroke-width="${sw}"/>`;let ix=x+4,iy=y+4,iw=bw-8,ih=bh-8,ft=w.fixedTop?(compact?13:36):0,fb=w.fixedBottom?(compact?13:36):0,fl=w.fixedLeft?(compact?18:55):0,fr=w.fixedRight?(compact?18:55):0;if(ft){s+=`<rect x="${ix}" y="${iy}" width="${iw}" height="${ft}" fill="#edf1ef" stroke="#263d4a"/>`;iy+=ft;ih-=ft}if(fb){s+=`<rect x="${ix}" y="${iy+ih-fb}" width="${iw}" height="${fb}" fill="#edf1ef" stroke="#263d4a"/>`;ih-=fb}if(fl){s+=`<rect x="${ix}" y="${iy}" width="${fl}" height="${ih}" fill="#edf1ef" stroke="#263d4a"/>`;ix+=fl;iw-=fl}if(fr){s+=`<rect x="${ix+iw-fr}" y="${iy}" width="${fr}" height="${ih}" fill="#edf1ef" stroke="#263d4a"/>`;iw-=fr}
+let count=1,type='open';if(m.kind==='double')count=2;if(m.kind==='triple')count=3;if(m.kind==='slide'){count=2;type='slide'}if(m.kind==='slide3'){count=3;type='slide'}if(m.kind==='fixed')type='fixed';
+for(let i=0;i<count;i++){const px=ix+iw*i/count,pw=iw/count;s+=`<rect x="${px}" y="${iy}" width="${pw}" height="${ih}" fill="#fff" stroke="#263d4a" stroke-width="${sw*.7}"/>`;if(type==='fixed')continue;if(type==='slide'){const cy=iy+ih/2;s+=`<line x1="${px+pw*.25}" y1="${cy}" x2="${px+pw*.75}" y2="${cy}" stroke="#125a35" stroke-width="${sw}"/>`;continue}let hinge='left',active=false,osc=false;if(m.kind==='single'){hinge=w.hinge||'left';active=true;osc=!!w.oscilo}else if(m.kind==='double'){active=(w.active==='left'?i===0:i===1);hinge=i===0?'left':'right';osc=active&&!!w.oscilo2}else{const ind=w.independent||'right',indIdx=ind==='left'?0:2;if(i===indIdx){active=true;hinge=ind==='left'?'left':'right';osc=!!w.oscilo3}else{const pair=[0,1,2].filter(n=>n!==indIdx);active=i===pair[1];hinge=i===pair[0]?'left':'right';osc=active&&!!w.oscilo2}}const hx=hinge==='left'?px:px+pw;s+=`<line x1="${hx}" y1="${iy}" x2="${hinge==='left'?px+pw:px}" y2="${iy+ih/2}" stroke="#68766e" stroke-width="${sw*.55}"/><line x1="${hx}" y1="${iy+ih}" x2="${hinge==='left'?px+pw:px}" y2="${iy+ih/2}" stroke="#68766e" stroke-width="${sw*.55}"/>`;if(osc)s+=`<path d="M ${px+pw*.2} ${iy+ih*.2} L ${px+pw*.5} ${iy+ih*.47} L ${px+pw*.8} ${iy+ih*.2}" fill="none" stroke="#125a35" stroke-width="${sw*.75}"/>`;const h=hinge==='left'?px+pw-5:px+5;s+=`<line x1="${h}" y1="${iy+ih*.43}" x2="${h}" y2="${iy+ih*.58}" stroke="#111" stroke-width="${sw}"/>`}
+if(!compact){s+=`<line x1="${x}" y1="${y+bh+20}" x2="${x+bw}" y2="${y+bh+20}" stroke="#263d4a"/><text x="${x+bw/2}" y="${y+bh+40}" text-anchor="middle" font-size="15" font-weight="700">${esc(w.width||'—')} mm</text><line x1="${x-20}" y1="${y}" x2="${x-20}" y2="${y+bh}" stroke="#263d4a"/><text transform="translate(${x-31} ${y+bh/2}) rotate(-90)" text-anchor="middle" font-size="15" font-weight="700">${esc(w.height||'—')} mm</text><text x="${W/2}" y="${H-6}" text-anchor="middle" font-size="10" fill="#697983">VISTO DESDE EL INTERIOR</text>`}return s+'</svg>'}
+function renderModels(){$('#models').innerHTML=MODELS.map(m=>`<button class="model ${selected===m.key?'active':''}" data-model="${m.key}">${svg({...defaults(),model:m.key,width:1200,height:m.door?2100:1200},true)}<b>${m.label}</b></button>`).join('')}
+function preview(){readDraft();$('#preview').innerHTML=svg(draft)}
+function renderList(){const l=$('#list');if(!state.windows.length){l.innerHTML='<div class="empty">Todavía no hay ventanas. La primera configuración se heredará en las siguientes, excepto estancia y medidas.</div>';return}l.innerHTML=state.windows.map((w,i)=>`<div class="item"><div class="itemrow"><div class="mini">${svg(w,true)}</div><div><div class="ref">V-${String(i+1).padStart(2,'0')}</div><b>${esc(w.room)}</b><div class="meta">${esc(MM[w.model].label)}<br>${esc(w.width)} × ${esc(w.height)} mm · ${w.units} ud.${w.photo?'<br><span class="photo-mark">📷 Foto incluida</span>':''}</div></div><div class="tools"><button class="btn ghost small" data-edit="${w.id}">Editar</button><button class="btn danger small" data-del="${w.id}">×</button></div></div></div>`).join('')}
+function validate(w){let ok=true;[['room',w.room],['width',w.width],['height',w.height]].forEach(([id,v])=>{$('#'+id).classList.toggle('invalid',!v);if(!v)ok=false});const lintelMissing=!!w.mosquito&&!w.lintel;$('#lintel').classList.toggle('invalid',lintelMissing);if(lintelMissing){ok=false;toast('Indica la medida de dintel para la mosquitera')}return ok}
+function persist(next){const w=readDraft();if(!validate(w)){toast('Completa estancia, ancho y alto');return}if(editing){state.windows[state.windows.findIndex(x=>x.id===editing)]=clone(w)}else{state.windows.push(clone(w));if(!state.template)state.template=config(w)}save();renderList();toast(editing?'Ventana actualizada':'Ventana guardada');if(next)startNew();else{editing=w.id;inherited=false;writeDraft()}}
+function startNew(){editing=null;draft=newDraft();inherited=!!state.template;writeDraft();window.scrollTo({top:document.querySelector('.workspace').offsetTop-65,behavior:'smooth'})}
+function edit(id){const w=state.windows.find(x=>x.id===id);if(!w)return;editing=id;draft=clone(w);inherited=false;writeDraft();window.scrollTo({top:document.querySelector('.workspace').offsetTop-65,behavior:'smooth'})}
+function summary(){const p=state.project;let t=`MEDICIÓN RÁPIDA PARA PRESUPUESTO\nCliente: ${p.client||'—'}\nDirección: ${p.address||'—'}\nTeléfono: ${p.phone||'—'}\nSerie: ${p.series}\nColor: ${colorDesc()}\nInstalación: ${p.install}\n\n`;state.windows.forEach((w,i)=>{t+=`V-${String(i+1).padStart(2,'0')} · ${w.room} · ${w.units} ud.\n${MM[w.model].label} · ${w.width} x ${w.height} mm\n${opening(w)}\n${blindDesc(w)}\nVidrio: ${glassDescription(w)}\nComplementos: ${acc(w)}\n${w.notes?'Observaciones: '+w.notes+'\n':''}${w.photo?'Fotografía: incluida\n':''}\n`});return t+'MEDIDAS ORIENTATIVAS PARA PRESUPUESTO. NO VÁLIDAS PARA FABRICACIÓN.'}
+function buildPrint(){readProject();const p=state.project,total=state.windows.reduce((a,w)=>a+(+w.units||1),0),rows=state.windows.map((w,i)=>`<tr><td>V-${String(i+1).padStart(2,'0')}</td><td>${esc(w.room)}</td><td>${w.units}</td><td>${esc(MM[w.model].label)}</td><td>${w.width} × ${w.height}</td><td>${esc(BLIND[w.blind])}</td></tr>`).join(''),cards=state.windows.map((w,i)=>`<section class="pc"><div class="pch"><div class="pref">V-${String(i+1).padStart(2,'0')}</div><div>ESTANCIA<b>${esc(w.room)}</b></div><div>UNIDADES<b>${w.units}</b></div><div>MEDIDAS<b>${w.width} × ${w.height} mm</b></div></div><div class="pbody"><div class="pdraw">${svg(w)}</div><div class="pdata"><div class="pgrid"><div class="pbox"><b>MODELO Y APERTURA</b>${esc(MM[w.model].label)}<br>${esc(opening(w))}</div><div class="pbox"><b>PERSIANA</b>${esc(blindDesc(w))}</div><div class="pbox"><b>VIDRIO</b>${esc(glassDescription(w))}</div><div class="pbox"><b>COMPLEMENTOS</b>${esc(acc(w))}</div></div><div class="pnotes"><b>OBSERVACIONES PARTICULARES</b><br>${esc(w.notes||'Sin observaciones particulares.')}</div></div></div>${w.photo?`<div class="pphoto"><b>FOTOGRAFÍA DE LA VENTANA</b><img src="${w.photo}" alt="Fotografía ${esc(w.room)}"></div>`:''}</section>`).join('');
+$('#printRoot').innerHTML=`<div class="ph"><div class="pb"><div class="pm">HG</div><div><b>HOMEGREENERS</b><small>VIVIENDAS · SOSTENIBLES · INTELIGENTES</small></div></div><div class="mid"><h1>MEDICIÓN RÁPIDA PARA PRESUPUESTO</h1><p>Documento interno para el departamento de estudios · Vistas desde el interior</p></div><div class="date">FECHA<b>${p.date?p.date.split('-').reverse().join('/'):'—'}</b></div></div><div class="pinfo"><div><b>CLIENTE</b><br>${esc(p.client||'—')}<br>${esc(p.address||'—')}<br>${esc(p.phone||'—')}</div><div><b>CONFIGURACIÓN GENERAL</b><br>${esc(p.series)}<br>${esc(colorDesc())}<br>${esc(p.install)}</div><div><b>RESUMEN</b><br>${state.windows.length} fichas<br>${total} unidades<br>Técnico: ${esc(p.technician||'—')}</div></div>${p.generalNotes?`<div class="pinfo"><div style="grid-column:1/4;border:0"><b>OBSERVACIONES GENERALES</b><br>${esc(p.generalNotes)}</div></div>`:''}<div class="pwarn">MEDIDAS ORIENTATIVAS PARA PRESUPUESTO. ESTE DOCUMENTO NO ES VÁLIDO PARA FABRICACIÓN.</div><table><thead><tr><th>REF.</th><th>ESTANCIA</th><th>UDS.</th><th>MODELO</th><th>MEDIDAS</th><th>PERSIANA</th></tr></thead><tbody>${rows}</tbody></table>${cards}`}
+function bind(){['client','phone','date','address','technician','series','colorMode','colorName','install','generalNotes'].forEach(id=>{$('#'+id).addEventListener('input',()=>{readProject();syncColor();save()});$('#'+id).addEventListener('change',()=>{readProject();syncColor();save()})});$('#models').addEventListener('click',e=>{const b=e.target.closest('[data-model]');if(!b)return;selected=b.dataset.model;draft.model=selected;renderModels();syncForm();preview()});['room','units','width','height','hinge','active','independent','oscilo','oscilo2','oscilo3','blind','box','boxOther','heightIncludesBox','glassType','glassInterior','glassExterior','fixedTop','fixedBottom','fixedLeft','fixedRight','mosquito','lintel','threshold','doubleHandle','exteriorPull','security','notes'].forEach(id=>{$('#'+id).addEventListener('input',()=>{syncForm();preview()});$('#'+id).addEventListener('change',()=>{syncForm();preview()})});$('#photoInput').onchange=async e=>{const file=e.target.files&&e.target.files[0];if(!file)return;try{toast('Procesando fotografía…');draft.photo=await compressPhoto(file);renderPhoto();toast('Fotografía añadida')}catch(err){toast('No se pudo cargar la fotografía')}finally{e.target.value=''}};
+$('#removePhotoBtn').onclick=()=>{draft.photo='';renderPhoto();toast('Fotografía eliminada')};$('#saveBtn').onclick=()=>persist(false);$('#saveNextBtn').onclick=()=>persist(true);$('#templateBtn').onclick=()=>{state.template=config(readDraft());save();inherited=false;$('#inheritBadge').classList.add('hidden');toast('Configuración guardada para las siguientes')};$('#list').onclick=e=>{const a=e.target.closest('[data-edit]'),d=e.target.closest('[data-del]');if(a)edit(a.dataset.edit);if(d&&confirm('¿Eliminar esta ventana?')){state.windows=state.windows.filter(w=>w.id!==d.dataset.del);if(editing===d.dataset.del)startNew();save();renderList()}};$('#clearBtn').onclick=()=>{if(confirm('¿Borrar toda la medición?')){state=blank();editing=null;draft=newDraft();save();writeProject();renderList();writeDraft()}};$('#copyBtn').onclick=async()=>{try{await navigator.clipboard.writeText(summary());toast('Resumen copiado')}catch(e){toast('No se pudo copiar')}};$('#pdfBtn').onclick=()=>{readProject();if(!state.project.client||!state.project.address){toast('Completa cliente y dirección');return}if(!state.windows.length){toast('Añade al menos una ventana');return}save();buildPrint();setTimeout(()=>window.print(),50)};$('#exportBtn').onclick=()=>{readProject();save();const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(state,null,2)],{type:'application/json'}));a.download='medicion_rapida_'+(state.project.client||'cliente').replace(/\s+/g,'_')+'.json';a.click()};$('#importInput').onchange=async e=>{try{const x=JSON.parse(await e.target.files[0].text());state={...blank(),...x,project:{...blank().project,...x.project},windows:Array.isArray(x.windows)?x.windows.map(normalizeGlass):[],template:x.template?normalizeGlass(x.template):null};editing=null;draft=newDraft();save();writeProject();renderList();writeDraft();toast('Copia importada')}catch(err){toast('Archivo no válido')}}}
+load();draft=newDraft();writeProject();renderList();writeDraft();bind();save();
+
+let deferredInstallPrompt=null;
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault();
+  deferredInstallPrompt=e;
+  const b=document.getElementById('installAppBtn');
+  if(b)b.classList.remove('hidden');
+});
+window.addEventListener('appinstalled',()=>{
+  deferredInstallPrompt=null;
+  const b=document.getElementById('installAppBtn');
+  if(b)b.classList.add('hidden');
+  toast('Aplicación instalada');
+});
+document.getElementById('installAppBtn')?.addEventListener('click',async()=>{
+  if(!deferredInstallPrompt){
+    toast('Usa el menú de Chrome: Instalar aplicación');
+    return;
+  }
+  deferredInstallPrompt.prompt();
+  await deferredInstallPrompt.userChoice;
+  deferredInstallPrompt=null;
+  document.getElementById('installAppBtn')?.classList.add('hidden');
+});
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('./service-worker.js').catch(()=>{});
+  });
+}
+
+</script>
+</body>
+</html>
