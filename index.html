@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>HOMEGREENERS · Presupuesto rápido de ventanas V1.5</title>
+<title>HOMEGREENERS · Presupuesto rápido de ventanas V1.6</title>
 <meta name="theme-color" content="#125a35">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -43,7 +43,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--g);box-s
 .photo-actions{display:flex;gap:7px;margin-top:8px}.photo-actions .btn{flex:1;padding:8px;font-size:11px}
 .photo-mark{display:inline-block;margin-top:3px;color:var(--g);font-weight:700}
 .hidden{display:none!important}.invalid{border-color:var(--danger)!important}
-.bottom{position:fixed;left:0;right:0;bottom:0;padding:20px 14px 10px;background:linear-gradient(180deg,transparent,var(--bg) 25%);z-index:15}.bottomin{max-width:1180px;margin:auto;display:flex;gap:8px}.bottom .btn{flex:1}
+.bottom{position:fixed;left:0;right:0;bottom:0;padding:20px 14px 10px;background:linear-gradient(180deg,transparent,var(--bg) 25%);z-index:15}.bottomin{max-width:1180px;margin:auto;display:flex;gap:8px;flex-wrap:wrap}.bottom .btn{flex:1}
 #toast{position:fixed;left:50%;bottom:76px;transform:translate(-50%,12px);opacity:0;background:#123928;color:#fff;padding:10px 14px;border-radius:9px;transition:.2s;z-index:99;font-size:12px}#toast.show{opacity:1;transform:translate(-50%,0)}
 #printRoot{display:none}
 @media(max-width:900px){.workspace{grid-template-columns:1fr}.side{position:static;max-height:none}.models{grid-template-columns:repeat(3,1fr)}}@media(max-width:650px){.editor{grid-template-columns:1fr}.grid2,.grid3{grid-template-columns:1fr}.models{grid-template-columns:repeat(2,1fr)}.drawing{min-height:270px}}
@@ -63,7 +63,7 @@ table{width:100%;border-collapse:collapse;font-size:6.8pt;margin-bottom:4mm}th,t
 </head>
 <body>
 <div id="app">
-<header class="top"><div class="topin"><div class="logo">HG</div><div class="brand"><b>HOMEGREENERS</b><small>Presupuesto rápido de ventanas · V1.5</small></div><button class="btn secondary small hidden" id="installAppBtn" type="button">Instalar app</button><div class="status" id="status">Guardado local</div></div></header>
+<header class="top"><div class="topin"><div class="logo">HG</div><div class="brand"><b>HOMEGREENERS</b><small>Presupuesto rápido de ventanas · V1.6</small></div><button class="btn secondary small hidden" id="installAppBtn" type="button">Instalar app</button><div class="status" id="status">Guardado local</div></div></header>
 <main class="wrap">
 <div class="notice">Aplicación autónoma y sin conexión. Los datos se guardan en este dispositivo. El resultado final se genera como PDF para el departamento de estudios.</div>
 
@@ -178,7 +178,7 @@ table{width:100%;border-collapse:collapse;font-size:6.8pt;margin-bottom:4mm}th,t
 </main>
 </div>
 
-<div class="bottom"><div class="bottomin"><button class="btn secondary" id="copyBtn">Copiar resumen</button><button class="btn primary" id="pdfBtn">Generar PDF para estudios</button></div></div>
+<div class="bottom"><div class="bottomin"><button class="btn ghost" id="copyBtn">Copiar resumen</button><button class="btn secondary" id="pdfBtn">Guardar PDF</button><button class="btn primary" id="sharePdfBtn">Compartir PDF</button></div></div>
 <div id="printRoot"></div><div id="toast"></div>
 
 <script>
@@ -327,8 +327,131 @@ function edit(id){const w=state.windows.find(x=>x.id===id);if(!w)return;editing=
 function summary(){const p=state.project;let t=`MEDICIÓN RÁPIDA PARA PRESUPUESTO\nCliente: ${p.client||'—'}\nDirección: ${p.address||'—'}\nTeléfono: ${p.phone||'—'}\nSerie: ${p.series}\nColor: ${colorDesc()}\nInstalación: ${p.install}\n\n`;state.windows.forEach((w,i)=>{t+=`V-${String(i+1).padStart(2,'0')} · ${w.room} · ${w.units} ud.\n${MM[w.model].label} · ${w.width} x ${w.height} mm\n${opening(w)}\n${blindDesc(w)}\nVidrio: ${glassDescription(w)}\nComplementos: ${acc(w)}\n${w.notes?'Observaciones: '+w.notes+'\n':''}${w.photo?'Fotografía: incluida\n':''}\n`});return t+'MEDIDAS ORIENTATIVAS PARA PRESUPUESTO. NO VÁLIDAS PARA FABRICACIÓN.'}
 function buildPrint(){readProject();const p=state.project,total=state.windows.reduce((a,w)=>a+(+w.units||1),0),rows=state.windows.map((w,i)=>`<tr><td>V-${String(i+1).padStart(2,'0')}</td><td>${esc(w.room)}</td><td>${w.units}</td><td>${esc(MM[w.model].label)}</td><td>${w.width} × ${w.height}</td><td>${esc(BLIND[w.blind])}</td></tr>`).join(''),cards=state.windows.map((w,i)=>`<section class="pc"><div class="pch"><div class="pref">V-${String(i+1).padStart(2,'0')}</div><div>ESTANCIA<b>${esc(w.room)}</b></div><div>UNIDADES<b>${w.units}</b></div><div>MEDIDAS<b>${w.width} × ${w.height} mm</b></div></div><div class="pbody"><div class="pdraw">${svg(w)}</div><div class="pdata"><div class="pgrid"><div class="pbox"><b>MODELO Y APERTURA</b>${esc(MM[w.model].label)}<br>${esc(opening(w))}</div><div class="pbox"><b>PERSIANA</b>${esc(blindDesc(w))}</div><div class="pbox"><b>VIDRIO</b>${esc(glassDescription(w))}</div><div class="pbox"><b>COMPLEMENTOS</b>${esc(acc(w))}</div></div><div class="pnotes"><b>OBSERVACIONES PARTICULARES</b><br>${esc(w.notes||'Sin observaciones particulares.')}</div></div></div>${w.photo?`<div class="pphoto"><b>FOTOGRAFÍA DE LA VENTANA</b><img src="${w.photo}" alt="Fotografía ${esc(w.room)}"></div>`:''}</section>`).join('');
 $('#printRoot').innerHTML=`<div class="ph"><div class="pb"><div class="pm">HG</div><div><b>HOMEGREENERS</b><small>VIVIENDAS · SOSTENIBLES · INTELIGENTES</small></div></div><div class="mid"><h1>MEDICIÓN RÁPIDA PARA PRESUPUESTO</h1><p>Documento interno para el departamento de estudios · Vistas desde el interior</p></div><div class="date">FECHA<b>${p.date?p.date.split('-').reverse().join('/'):'—'}</b></div></div><div class="pinfo"><div><b>CLIENTE</b><br>${esc(p.client||'—')}<br>${esc(p.address||'—')}<br>${esc(p.phone||'—')}</div><div><b>CONFIGURACIÓN GENERAL</b><br>${esc(p.series)}<br>${esc(colorDesc())}<br>${esc(p.install)}</div><div><b>RESUMEN</b><br>${state.windows.length} fichas<br>${total} unidades<br>Técnico: ${esc(p.technician||'—')}</div></div>${p.generalNotes?`<div class="pinfo"><div style="grid-column:1/4;border:0"><b>OBSERVACIONES GENERALES</b><br>${esc(p.generalNotes)}</div></div>`:''}<div class="pwarn">MEDIDAS ORIENTATIVAS PARA PRESUPUESTO. ESTE DOCUMENTO NO ES VÁLIDO PARA FABRICACIÓN.</div><table><thead><tr><th>REF.</th><th>ESTANCIA</th><th>UDS.</th><th>MODELO</th><th>MEDIDAS</th><th>PERSIANA</th></tr></thead><tbody>${rows}</tbody></table>${cards}`}
+
+const PDF_W=595.28,PDF_H=841.89;
+function pdfWinAnsiBytes(value){
+  const extra={'€':128,'‚':130,'ƒ':131,'„':132,'…':133,'†':134,'‡':135,'ˆ':136,'‰':137,'Š':138,'‹':139,'Œ':140,'Ž':142,'‘':145,'’':146,'“':147,'”':148,'•':149,'–':150,'—':151,'˜':152,'™':153,'š':154,'›':155,'œ':156,'ž':158,'Ÿ':159};
+  const out=[];
+  for(const ch of String(value??'')){
+    const cp=ch.codePointAt(0);
+    out.push(cp<=255?cp:(extra[ch]??63));
+  }
+  return new Uint8Array(out);
+}
+function pdfConcat(parts){
+  const size=parts.reduce((n,p)=>n+p.length,0),out=new Uint8Array(size);let off=0;
+  for(const p of parts){out.set(p,off);off+=p.length}return out;
+}
+function pdfEscText(value){return String(value??'').replace(/[\\()]/g,m=>'\\'+m).replace(/[\r\n]+/g,' ')}
+function pdfNum(n){return Number(n).toFixed(2).replace(/\.00$/,'')}
+class MiniPdf{
+  constructor(){this.objects=[null]}
+  reserve(){this.objects.push(null);return this.objects.length-1}
+  set(id,data){this.objects[id]=typeof data==='string'?pdfWinAnsiBytes(data):data}
+  add(data){const id=this.reserve();this.set(id,data);return id}
+  addStream(dict,data){const bytes=typeof data==='string'?pdfWinAnsiBytes(data):data;return this.add(pdfConcat([pdfWinAnsiBytes(`<< ${dict} /Length ${bytes.length} >>\nstream\n`),bytes,pdfWinAnsiBytes('\nendstream')]))}
+  build(rootId){
+    const parts=[pdfWinAnsiBytes('%PDF-1.4\n%âãÏÓ\n')],offsets=[0];let pos=parts[0].length;
+    for(let i=1;i<this.objects.length;i++){
+      offsets[i]=pos;const head=pdfWinAnsiBytes(`${i} 0 obj\n`),body=this.objects[i]||pdfWinAnsiBytes('<<>>'),tail=pdfWinAnsiBytes('\nendobj\n');
+      parts.push(head,body,tail);pos+=head.length+body.length+tail.length;
+    }
+    const xref=pos;let x=`xref\n0 ${this.objects.length}\n0000000000 65535 f \n`;
+    for(let i=1;i<this.objects.length;i++)x+=String(offsets[i]).padStart(10,'0')+' 00000 n \n';
+    x+=`trailer\n<< /Size ${this.objects.length} /Root ${rootId} 0 R >>\nstartxref\n${xref}\n%%EOF`;
+    parts.push(pdfWinAnsiBytes(x));return pdfConcat(parts);
+  }
+}
+class PdfCanvas{
+  constructor(){this.c=[];this.xobjects={}}
+  y(top){return PDF_H-top}
+  text(x,top,size,value,bold=false,color='0.12 0.18 0.21'){
+    const font=bold?'F2':'F1';this.c.push(`${color} rg BT /${font} ${pdfNum(size)} Tf ${pdfNum(x)} ${pdfNum(this.y(top)-size)} Td (${pdfEscText(value)}) Tj ET`)
+  }
+  line(x1,t1,x2,t2,width=1,color='0.18 0.25 0.28'){this.c.push(`${color} RG ${pdfNum(width)} w ${pdfNum(x1)} ${pdfNum(this.y(t1))} m ${pdfNum(x2)} ${pdfNum(this.y(t2))} l S`)}
+  rect(x,top,w,h,stroke='0.18 0.25 0.28',fill=null,width=1){if(fill)this.c.push(`${fill} rg ${pdfNum(x)} ${pdfNum(this.y(top+h))} ${pdfNum(w)} ${pdfNum(h)} re f`);if(stroke)this.c.push(`${stroke} RG ${pdfNum(width)} w ${pdfNum(x)} ${pdfNum(this.y(top+h))} ${pdfNum(w)} ${pdfNum(h)} re S`)}
+  image(name,x,top,w,h){this.c.push(`q ${pdfNum(w)} 0 0 ${pdfNum(h)} ${pdfNum(x)} ${pdfNum(this.y(top+h))} cm /${name} Do Q`)}
+  content(){return this.c.join('\n')}
+}
+function pdfWrap(value,maxWidth,fontSize){
+  const words=String(value??'').split(/\s+/).filter(Boolean),lines=[];let line='';const max=Math.max(8,Math.floor(maxWidth/(fontSize*.52)));
+  for(const word of words){const next=line?line+' '+word:word;if(next.length<=max)line=next;else{if(line)lines.push(line);line=word.length>max?word.slice(0,max):word}}
+  if(line)lines.push(line);return lines.length?lines:['—'];
+}
+function pdfTextBlock(c,x,top,w,size,value,bold=false,maxLines=6,color='0.12 0.18 0.21'){
+  const lines=pdfWrap(value,w,size).slice(0,maxLines);lines.forEach((line,i)=>c.text(x,top+i*(size+3),size,line,bold,color));return top+lines.length*(size+3)
+}
+function pdfDataUrlBytes(dataUrl){const base64=String(dataUrl).split(',')[1]||'',raw=atob(base64),out=new Uint8Array(raw.length);for(let i=0;i<raw.length;i++)out[i]=raw.charCodeAt(i);return out}
+function pdfJpegSize(bytes){
+  let i=2;while(i<bytes.length){if(bytes[i]!==255){i++;continue}const marker=bytes[i+1];i+=2;if(marker===216||marker===217)continue;if(i+1>=bytes.length)break;const len=(bytes[i]<<8)+bytes[i+1];if([192,193,194,195,197,198,199,201,202,203,205,206,207].includes(marker)){return{height:(bytes[i+3]<<8)+bytes[i+4],width:(bytes[i+5]<<8)+bytes[i+6]}}i+=len}return{width:1000,height:750}
+}
+function pdfSafeName(value){return String(value||'CLIENTE').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9_-]+/g,'_').replace(/^_+|_+$/g,'').slice(0,55)||'CLIENTE'}
+function pdfFileName(){const p=state.project,date=(p.date||new Date().toISOString().slice(0,10)).replaceAll('-','');return`MEDICION_PRESUPUESTO_${pdfSafeName(p.client)}_${date}.pdf`}
+function pdfDrawHeader(c,title,subtitle='Documento interno para el departamento de estudios'){
+  c.rect(0,0,PDF_W,58,null,'0.07 0.35 0.21');c.text(28,15,17,'HOMEGREENERS',true,'1 1 1');c.text(28,36,8,'VIVIENDAS · SOSTENIBLES · INTELIGENTES',false,'1 1 1');c.text(205,17,14,title,true,'1 1 1');c.text(205,37,7,subtitle,false,'1 1 1')
+}
+function pdfDrawWindow(c,w,x,top,width,height){
+  const m=MM[w.model]||MM.win2,blind=w.blind&&w.blind!=='none';let y=top,frameH=height-(blind?28:0);
+  if(blind){c.rect(x,y,width,24,'0.15 0.24 0.28','0.90 0.92 0.91',1.2);c.text(x+width/2-34,y+7,8,`CAJÓN ${boxSize(w)} mm`,true);y+=28}
+  c.rect(x,y,width,frameH,'0.12 0.18 0.21',null,2);
+  let ix=x+5,iy=y+5,iw=width-10,ih=frameH-10;
+  const ft=w.fixedTop?ih*.15:0,fb=w.fixedBottom?ih*.15:0,fl=w.fixedLeft?iw*.18:0,fr=w.fixedRight?iw*.18:0;
+  if(ft){c.rect(ix,iy,iw,ft,'0.28 0.35 0.32','0.94 0.96 0.95');iy+=ft;ih-=ft}
+  if(fb){c.rect(ix,iy+ih-fb,iw,fb,'0.28 0.35 0.32','0.94 0.96 0.95');ih-=fb}
+  if(fl){c.rect(ix,iy,fl,ih,'0.28 0.35 0.32','0.94 0.96 0.95');ix+=fl;iw-=fl}
+  if(fr){c.rect(ix+iw-fr,iy,fr,ih,'0.28 0.35 0.32','0.94 0.96 0.95');iw-=fr}
+  let count=1,type='open';if(m.kind==='double')count=2;if(m.kind==='triple')count=3;if(m.kind==='slide'){count=2;type='slide'}if(m.kind==='slide3'){count=3;type='slide'}if(m.kind==='fixed')type='fixed';
+  for(let i=0;i<count;i++){
+    const px=ix+iw*i/count,pw=iw/count;c.rect(px,iy,pw,ih,'0.15 0.24 0.28',null,1);
+    if(type==='fixed')continue;
+    if(type==='slide'){c.line(px+pw*.25,iy+ih*.5,px+pw*.75,iy+ih*.5,1.5,'0.07 0.35 0.21');continue}
+    let hinge='left',osc=false;
+    if(m.kind==='single'){hinge=w.hinge||'left';osc=!!w.oscilo}
+    else if(m.kind==='double'){const active=(w.active==='left'?i===0:i===1);hinge=i===0?'left':'right';osc=active&&!!w.oscilo2}
+    else{const ind=w.independent||'right',indIdx=ind==='left'?0:2;if(i===indIdx){hinge=ind==='left'?'left':'right';osc=!!w.oscilo3}else{const pair=[0,1,2].filter(n=>n!==indIdx);hinge=i===pair[0]?'left':'right';osc=i===pair[1]&&!!w.oscilo2}}
+    const hx=hinge==='left'?px:px+pw,op=hinge==='left'?px+pw:px;c.line(hx,iy,op,iy+ih/2,.8,'0.42 0.47 0.44');c.line(hx,iy+ih,op,iy+ih/2,.8,'0.42 0.47 0.44');
+    if(osc){c.line(px+pw*.2,iy+ih*.2,px+pw*.5,iy+ih*.48,1.2,'0.07 0.35 0.21');c.line(px+pw*.5,iy+ih*.48,px+pw*.8,iy+ih*.2,1.2,'0.07 0.35 0.21')}
+  }
+  c.line(x,y+frameH+15,x+width,y+frameH+15,.8);c.text(x+width/2-25,y+frameH+19,9,`${w.width||'—'} mm`,true);
+  c.line(x-15,y,x-15,y+frameH,.8);c.text(x-36,y+frameH/2,8,`${w.height||'—'} mm`,true)
+}
+function pdfAddImageObject(doc,dataUrl){
+  try{const bytes=pdfDataUrlBytes(dataUrl),size=pdfJpegSize(bytes);const id=doc.addStream(`/Type /XObject /Subtype /Image /Width ${size.width} /Height ${size.height} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode`,bytes);return{id,...size}}catch(e){return null}
+}
+function createMeasurementPdfBlob(){
+  readProject();const p=state.project,doc=new MiniPdf(),catalog=doc.reserve(),pages=doc.reserve(),font=doc.add('<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>'),bold=doc.add('<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>'),pageIds=[];
+  function addPage(c,images={}){const xobjs=Object.entries(images).map(([name,obj])=>`/${name} ${obj.id} 0 R`).join(' '),content=doc.addStream('',c.content()),resources=`<< /Font << /F1 ${font} 0 R /F2 ${bold} 0 R >>${xobjs?` /XObject << ${xobjs} >>`:''} >>`,page=doc.add(`<< /Type /Page /Parent ${pages} 0 R /MediaBox [0 0 ${PDF_W} ${PDF_H}] /Resources ${resources} /Contents ${content} 0 R >>`);pageIds.push(page)}
+  const total=state.windows.reduce((a,w)=>a+(+w.units||1),0),rowsPerPage=18;
+  for(let start=0;start<state.windows.length;start+=rowsPerPage){
+    const c=new PdfCanvas();pdfDrawHeader(c,start===0?'MEDICIÓN RÁPIDA PARA PRESUPUESTO':'RESUMEN DE VENTANAS · CONTINUACIÓN');let top=74;
+    if(start===0){
+      c.rect(28,top,539,78,'0.18 0.25 0.28','0.97 0.98 0.97');c.text(40,top+10,8,'CLIENTE',true,'0.07 0.35 0.21');pdfTextBlock(c,40,top+24,235,10,p.client||'—',true,2);pdfTextBlock(c,40,top+48,235,8,p.address||'—',false,2);c.text(300,top+10,8,'CONFIGURACIÓN GENERAL',true,'0.07 0.35 0.21');pdfTextBlock(c,300,top+24,250,8,`${p.series} · ${colorDesc()} · ${p.install}`,false,4);top+=90;
+      c.rect(28,top,539,30,'0.72 0.45 0.18','0.99 0.96 0.91');c.text(38,top+9,8,'MEDIDAS ORIENTATIVAS PARA PRESUPUESTO. NO VÁLIDAS PARA FABRICACIÓN.',true,'0.55 0.25 0.08');top+=42;
+      c.text(30,top,8,`${state.windows.length} fichas · ${total} unidades · Técnico: ${p.technician||'—'} · Fecha: ${(p.date||'—').split('-').reverse().join('/')}`,false);top+=22;
+    }
+    const cols=[28,70,195,232,378,470,567];const headers=['REF.','ESTANCIA','UDS.','MODELO','MEDIDAS','PERSIANA'];c.rect(28,top,539,25,null,'0.09 0.22 0.30');headers.forEach((h,i)=>c.text(cols[i]+4,top+8,7,h,true,'1 1 1'));top+=25;
+    state.windows.slice(start,start+rowsPerPage).forEach((w,j)=>{const i=start+j,h=27;c.rect(28,top,539,h,'0.62 0.67 0.64',j%2?'0.98 0.99 0.98':null,.5);[70,195,232,378,470].forEach(x=>c.line(x,top,x,top+h,.5,'0.62 0.67 0.64'));c.text(32,top+8,7,`V-${String(i+1).padStart(2,'0')}`,true);c.text(74,top+8,7,String(w.room).slice(0,22));c.text(207,top+8,7,String(w.units));c.text(236,top+8,7,MM[w.model].label.slice(0,25));c.text(384,top+8,7,`${w.width} × ${w.height}`);c.text(475,top+8,7,BLIND[w.blind].slice(0,18));top+=h});addPage(c)
+  }
+  state.windows.forEach((w,i)=>{
+    const c=new PdfCanvas(),images={};pdfDrawHeader(c,`V-${String(i+1).padStart(2,'0')} · ${String(w.room||'VENTANA').toUpperCase()}`,'Ficha visual para presupuesto · Vista desde el interior');
+    c.rect(28,72,539,44,'0.18 0.25 0.28','0.96 0.98 0.97');c.text(40,82,8,'MODELO',true,'0.07 0.35 0.21');c.text(40,97,10,MM[w.model].label,true);c.text(250,82,8,'UNIDADES',true,'0.07 0.35 0.21');c.text(250,97,10,String(w.units),true);c.text(365,82,8,'MEDIDAS',true,'0.07 0.35 0.21');c.text(365,97,10,`${w.width} × ${w.height} mm`,true);
+    pdfDrawWindow(c,w,45,145,220,245);
+    let t=145;const bx=292,bw=265;
+    const box=(title,value,minH=58)=>{const lines=pdfWrap(value,bw-20,8),h=Math.max(minH,26+lines.slice(0,6).length*11);c.rect(bx,t,bw,h,'0.68 0.73 0.70','0.98 0.99 0.98');c.text(bx+10,t+9,8,title,true,'0.07 0.35 0.21');pdfTextBlock(c,bx+10,t+24,bw-20,8,value,false,6);t+=h+8};
+    box('APERTURA',opening(w));box('PERSIANA',blindDesc(w));box('VIDRIO',glassDescription(w),70);box('COMPLEMENTOS',acc(w),70);box('OBSERVACIONES',w.notes||'Sin observaciones particulares.',64);
+    if(w.photo){const img=pdfAddImageObject(doc,w.photo);if(img){images.IMG1=img;const maxW=510,maxH=260,ratio=img.width/img.height;let iw=maxW,ih=iw/ratio;if(ih>maxH){ih=maxH;iw=ih*ratio}const px=(PDF_W-iw)/2,pt=515;c.text(42,498,9,'FOTOGRAFÍA DE LA VENTANA',true,'0.07 0.35 0.21');c.rect(35,510,525,280,'0.68 0.73 0.70','0.97 0.98 0.97');c.image('IMG1',px,pt+(260-ih)/2,iw,ih)}}
+    else{c.rect(35,510,525,110,'0.68 0.73 0.70','0.98 0.99 0.98');c.text(48,528,9,'SIN FOTOGRAFÍA',true,'0.42 0.47 0.44')}
+    c.text(35,812,7,'MEDIDAS ORIENTATIVAS PARA PRESUPUESTO · NO VÁLIDAS PARA FABRICACIÓN',true,'0.55 0.25 0.08');addPage(c,images)
+  });
+  doc.set(pages,`<< /Type /Pages /Kids [${pageIds.map(id=>`${id} 0 R`).join(' ')}] /Count ${pageIds.length} >>`);doc.set(catalog,`<< /Type /Catalog /Pages ${pages} 0 R >>`);return new Blob([doc.build(catalog)],{type:'application/pdf'})
+}
+function validatePdfData(){readProject();if(!state.project.client||!state.project.address){toast('Completa cliente y dirección');return false}if(!state.windows.length){toast('Añade al menos una ventana');return false}save();return true}
+function downloadPdfBlob(blob,name){const a=document.createElement('a'),url=URL.createObjectURL(blob);a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2500)}
+function saveMeasurementPdf(){if(!validatePdfData())return;try{toast('Generando PDF…');const blob=createMeasurementPdfBlob();downloadPdfBlob(blob,pdfFileName());toast('PDF guardado')}catch(e){console.error(e);toast('No se pudo generar el PDF')}}
+async function shareMeasurementPdf(){if(!validatePdfData())return;try{toast('Preparando PDF para compartir…');const blob=createMeasurementPdfBlob(),name=pdfFileName(),file=new File([blob],name,{type:'application/pdf'});if(navigator.share&&(!navigator.canShare||navigator.canShare({files:[file]}))){await navigator.share({title:'Medición de ventanas',text:`Medición para presupuesto: ${state.project.client}`,files:[file]});toast('PDF compartido')}else{downloadPdfBlob(blob,name);toast('PDF guardado. Compártelo desde Descargas')}}catch(e){if(e&&e.name==='AbortError')toast('Compartir cancelado');else{console.error(e);toast('No se pudo compartir el PDF')}}}
+
 function bind(){['client','phone','date','address','technician','series','colorMode','colorName','install','generalNotes'].forEach(id=>{$('#'+id).addEventListener('input',()=>{readProject();syncColor();save()});$('#'+id).addEventListener('change',()=>{readProject();syncColor();save()})});$('#models').addEventListener('click',e=>{const b=e.target.closest('[data-model]');if(!b)return;selected=b.dataset.model;draft.model=selected;renderModels();syncForm();preview()});['room','units','width','height','hinge','active','independent','oscilo','oscilo2','oscilo3','blind','box','boxOther','heightIncludesBox','glassType','glassInterior','glassExterior','fixedTop','fixedBottom','fixedLeft','fixedRight','mosquito','lintel','threshold','doubleHandle','exteriorPull','security','notes'].forEach(id=>{$('#'+id).addEventListener('input',()=>{syncForm();preview()});$('#'+id).addEventListener('change',()=>{syncForm();preview()})});$('#photoInput').onchange=async e=>{const file=e.target.files&&e.target.files[0];if(!file)return;try{toast('Procesando fotografía…');draft.photo=await compressPhoto(file);renderPhoto();toast('Fotografía añadida')}catch(err){toast('No se pudo cargar la fotografía')}finally{e.target.value=''}};
-$('#removePhotoBtn').onclick=()=>{draft.photo='';renderPhoto();toast('Fotografía eliminada')};$('#saveBtn').onclick=()=>persist(false);$('#saveNextBtn').onclick=()=>persist(true);$('#templateBtn').onclick=()=>{state.template=config(readDraft());save();inherited=false;$('#inheritBadge').classList.add('hidden');toast('Configuración guardada para las siguientes')};$('#list').onclick=e=>{const a=e.target.closest('[data-edit]'),d=e.target.closest('[data-del]');if(a)edit(a.dataset.edit);if(d&&confirm('¿Eliminar esta ventana?')){state.windows=state.windows.filter(w=>w.id!==d.dataset.del);if(editing===d.dataset.del)startNew();save();renderList()}};$('#clearBtn').onclick=()=>{if(confirm('¿Borrar toda la medición?')){state=blank();editing=null;draft=newDraft();save();writeProject();renderList();writeDraft()}};$('#copyBtn').onclick=async()=>{try{await navigator.clipboard.writeText(summary());toast('Resumen copiado')}catch(e){toast('No se pudo copiar')}};$('#pdfBtn').onclick=()=>{readProject();if(!state.project.client||!state.project.address){toast('Completa cliente y dirección');return}if(!state.windows.length){toast('Añade al menos una ventana');return}save();buildPrint();setTimeout(()=>window.print(),50)};$('#exportBtn').onclick=()=>{readProject();save();const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(state,null,2)],{type:'application/json'}));a.download='medicion_rapida_'+(state.project.client||'cliente').replace(/\s+/g,'_')+'.json';a.click()};$('#importInput').onchange=async e=>{try{const x=JSON.parse(await e.target.files[0].text());state={...blank(),...x,project:{...blank().project,...x.project},windows:Array.isArray(x.windows)?x.windows.map(normalizeGlass):[],template:x.template?normalizeGlass(x.template):null};editing=null;draft=newDraft();save();writeProject();renderList();writeDraft();toast('Copia importada')}catch(err){toast('Archivo no válido')}}}
+$('#removePhotoBtn').onclick=()=>{draft.photo='';renderPhoto();toast('Fotografía eliminada')};$('#saveBtn').onclick=()=>persist(false);$('#saveNextBtn').onclick=()=>persist(true);$('#templateBtn').onclick=()=>{state.template=config(readDraft());save();inherited=false;$('#inheritBadge').classList.add('hidden');toast('Configuración guardada para las siguientes')};$('#list').onclick=e=>{const a=e.target.closest('[data-edit]'),d=e.target.closest('[data-del]');if(a)edit(a.dataset.edit);if(d&&confirm('¿Eliminar esta ventana?')){state.windows=state.windows.filter(w=>w.id!==d.dataset.del);if(editing===d.dataset.del)startNew();save();renderList()}};$('#clearBtn').onclick=()=>{if(confirm('¿Borrar toda la medición?')){state=blank();editing=null;draft=newDraft();save();writeProject();renderList();writeDraft()}};$('#copyBtn').onclick=async()=>{try{await navigator.clipboard.writeText(summary());toast('Resumen copiado')}catch(e){toast('No se pudo copiar')}};$('#pdfBtn').onclick=saveMeasurementPdf;$('#sharePdfBtn').onclick=shareMeasurementPdf;$('#exportBtn').onclick=()=>{readProject();save();const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(state,null,2)],{type:'application/json'}));a.download='medicion_rapida_'+(state.project.client||'cliente').replace(/\s+/g,'_')+'.json';a.click()};$('#importInput').onchange=async e=>{try{const x=JSON.parse(await e.target.files[0].text());state={...blank(),...x,project:{...blank().project,...x.project},windows:Array.isArray(x.windows)?x.windows.map(normalizeGlass):[],template:x.template?normalizeGlass(x.template):null};editing=null;draft=newDraft();save();writeProject();renderList();writeDraft();toast('Copia importada')}catch(err){toast('Archivo no válido')}}}
 load();draft=newDraft();writeProject();renderList();writeDraft();bind();save();
 
 let deferredInstallPrompt=null;
