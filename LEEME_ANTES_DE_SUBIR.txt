@@ -1,0 +1,17 @@
+HOMEGREENERS V4.2 - ARCHIVOS PARA GITHUB PAGES
+
+1. Descomprime este ZIP.
+2. Sube al directorio raíz del repositorio:
+   - index.html
+   - service-worker.js
+   - manifest.webmanifest
+   - icon-192.png
+   - icon-512.png
+   - logo-homegreeners.png
+   - logo-homegreeners-pdf.jpg
+   - .nojekyll
+3. NO BORRES NI SUSTITUYAS drive-config.js. Debe conservarse el que ya existe en GitHub.
+4. Confirma los cambios directamente en la rama main.
+5. Espera la publicación de GitHub Pages y recarga la aplicación.
+
+Este paquete no contiene credenciales de Google Drive.
