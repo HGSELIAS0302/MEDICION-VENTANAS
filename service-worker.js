@@ -1,5 +1,22 @@
-const CACHE='homegreeners-presupuesto-v4-2-2-photo-download';
-const ASSETS=['./','./index.html','./manifest.webmanifest','./icon-192.png','./icon-512.png','./logo-homegreeners.png','./logo-homegreeners-pdf.jpg'];
-self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)));self.skipWaiting()});
-self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))));self.clients.claim()});
-self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;e.respondWith(caches.match(e.request).then(hit=>hit||fetch(e.request).then(r=>{const copy=r.clone();caches.open(CACHE).then(c=>c.put(e.request,copy));return r}).catch(()=>caches.match('./index.html'))))});
+const CACHE='homegreeners-comercial-v8-61';
+const PREFIX='homegreeners-comercial-';
+const ASSETS=['./index.html','./manifest.webmanifest','./icon-192.png','./icon-512.png'];
+self.addEventListener('install',event=>{
+ event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).then(()=>self.skipWaiting()));
+});
+self.addEventListener('activate',event=>{
+ event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key.startsWith(PREFIX)&&key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim()));
+});
+self.addEventListener('fetch',event=>{
+ const url=new URL(event.request.url);
+ if(event.request.method!=='GET'||url.origin!==self.location.origin||!url.href.startsWith(self.registration.scope))return;
+ if(event.request.mode==='navigate'){
+  event.respondWith(fetch(event.request).then(async response=>{
+   if(!response.ok)throw new Error('Page unavailable');
+   const cache=await caches.open(CACHE);await cache.put('./index.html',response.clone());return response;
+  }).catch(()=>caches.open(CACHE).then(cache=>cache.match('./index.html'))));return;
+ }
+ if(ASSETS.some(path=>new URL(path,self.registration.scope).href===url.href)){
+  event.respondWith(caches.open(CACHE).then(async cache=>(await cache.match(event.request))||fetch(event.request)));
+ }
+});

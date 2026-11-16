@@ -1,10 +1,12 @@
 {
-  "name": "HOMEGREENERS · Mediciones de ventanas",
-  "short_name": "Mediciones HGS",
+  "id": "./",
+  "name": "HOMEGREENERS · APP COMERCIAL",
+  "short_name": "HGS Comercial",
   "start_url": "./",
+  "scope": "./",
   "display": "standalone",
-  "background_color": "#f4f7f7",
-  "theme_color": "#1a202c",
+  "background_color": "#f2f5f2",
+  "theme_color": "#123f35",
   "icons": [
     {
       "src": "icon-192.png",
